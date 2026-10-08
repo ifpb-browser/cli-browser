@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cli-browser"
+version = "0.1.0"
+description = "Command line web browser"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+dependencies = []
+
+[project.scripts]
+cli-browser = "cli_browser.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cli_browser"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
