@@ -13,7 +13,7 @@ class Browser:
 
     def __str__(self) -> str:
         # This formats the list history, i`ll be adding a line break between links, you can remove it if you want
-        history_str = "\n".join(f"  - {url}" for url in self.history)
+        history_str = "".join(f"  - {url}" for url in self.history)
 
         # O f""" (f-string com aspas triplas) é o equivalente ao heredoc no Python
         browser_interface_content = f"""
