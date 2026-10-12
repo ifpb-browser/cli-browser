@@ -7,3 +7,6 @@ class Browser:
         self.history: list[str] = read_browser_history_from_file(
             "./browser_history_toml"
         )
+
+        def handle(self):
+            print("Browser is ready! Waiting for user inputs...")
