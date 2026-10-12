@@ -1,10 +1,11 @@
 import sys
-from cli_browser.browser import browser
+
+from cli_browser.browser import Browser
 
 
 def main() -> int:
     print("cli-browser", file=sys.stdout)
-    browser = browser()
+    browser = Browser()
     browser.handle()
     return 0
 
