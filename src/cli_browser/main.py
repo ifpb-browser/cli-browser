@@ -7,6 +7,7 @@ def main() -> int:
     print("cli-browser", file=sys.stdout)
     browser = Browser()
     browser.handle()
+    print(browser.__str__())
     return 0
 
 
