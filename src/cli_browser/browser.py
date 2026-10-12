@@ -1,6 +1,6 @@
 from cli_browser.read_browser_history_from_file import read_browser_history_from_file
-
-
+from cli_browser.validate_urls import url_is_valid
+from cli_browser.write_url_to_file import write_url_to_file
 class Browser:
     def __init__(self) -> None:
         self.current_url: str = ""
@@ -27,3 +27,10 @@ class Browser:
         =========================================
         """
         return browser_interface_content
+
+    def add_url_to_history(self) ->  bool:
+        if url_is_valid(self.current_url) == False:
+            return "InvalidURLFormat"
+        else:
+            self.history.append(self.current_url)
+            write_url_to_file("./browser_history.toml", self.current_url)
