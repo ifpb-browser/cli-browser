@@ -14,29 +14,38 @@ python -m cli_browser
 Comandos
 --------
 
-Toda entrada é digitada no prompt `Write your input`. Comandos começam com `#`,
-e o `#add` exige um espaço antes da url.
+Toda entrada é digitada no prompt `url:`. Comandos começam com `#`, e os que
+recebem uma url exigem um espaço antes dela, portanto `#addwww.ifpb.edu.br` não
+é um comando.
 
-| Entrada      | Efeito                                                                       |
-|--------------|------------------------------------------------------------------------------|
-| `#add <url>` | Registra a url no histórico e a torna a url atual. Erro: `InvalidURLFormat`. |
-| `#quit`      | Encerra o navegador.                                                         |
-
-Qualquer outra entrada responde `Unknown input`, e `Ctrl+C` também encerra o
-navegador.
+| Entrada        | Efeito                                                                |
+|----------------|-----------------------------------------------------------------------|
+| `<url>`        | Visita uma url disponível. Erro: `PageNotFound (404)`.                |
+| `/<página>`    | Visita uma página interna da url atual. Erro: `PageNotFound (404)`.   |
+| `#add <url>`   | Adiciona uma url às disponíveis. Erro: `UrlCannotBeAdded`.            |
+| `#back`        | Volta à última url visitada. Erro: `EmptyNavigationHistory`.          |
+| `#showhist`    | Exibe o histórico de navegação.                                       |
+| `#help`        | Lista todos os comandos.                                              |
+| `#quit`        | Encerra o navegador.                                                  |
 
 Banco de urls
 -------------
 
-O histórico é lido de `browser_history.toml` na inicialização e persistido nesse
-mesmo arquivo pelo `#add`:
+As urls disponíveis são lidas de `browser_history.toml` na inicialização e
+persistidas nesse mesmo arquivo pelo `#add`:
 
 ```toml
 browser_history_urls = [
     "www.ifpb.edu.br",
-    "www.detran.pb.gov.br",
+    "www.ifpb.edu.br/tsi",
+    "www.ifpb.edu.br/tsi/professores",
 ]
 ```
+
+Implementação
+-------------
+
+Detalhes de implementação em [docs/IMPLEMENTATION_DETAILS.md](docs/IMPLEMENTATION_DETAILS.md).
 
 Formatação
 ----------
