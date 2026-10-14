@@ -1,62 +1,122 @@
-from cli_browser.read_browser_history_from_file import read_browser_history_from_file
-from cli_browser.validate_urls import url_is_valid
+from cli_browser.add_url_to_hierarchy import add_url_to_hierarchy
+from cli_browser.clear_terminal import clear_terminal
+from cli_browser.find_url_in_hierarchy import find_url_in_hierarchy
+from cli_browser.get_valid_history_list import get_valid_history_list
+from cli_browser.url import Url
+from cli_browser.url_can_be_added import url_can_be_added
 from cli_browser.write_url_to_file import write_url_to_file
-from cli_browser.get_url_from_user_input import get_url_from_user_input
 
 
 class Browser:
     def __init__(self) -> None:
-        self.current_url: str = ""
-        self.history: list[str] = read_browser_history_from_file(
-            "./browser_history.toml"
-        )
+        self.current_url: Url = Url("", [])
+        self.available_urls: list[Url] = get_valid_history_list()
+        self.history: list[Url] = []
+        self.status_message: str = "Type #help to see every available command."
 
     def handle(self) -> None:
         while True:
             try:
+                clear_terminal()
                 print(self)
-                user_input = input("Write your input (#add <url> ou #quit): ")
+                user_input = input("url: ").strip()
 
                 if user_input == "#quit":
-                    print("Leavin' browser.")
+                    print("Leaving browser.")
                     break
 
-                elif user_input.startswith("#add "):
-                    # using translation with regex to clean string
-                    treated_url = get_url_from_user_input(user_input)
+                self.handle_user_input(user_input)
 
-                    try:
-                        self.add_url_to_history(treated_url)
-                        self.current_url = treated_url
-                    except Exception as exception:
-                        print(f"\n[ERROR]: {exception}")
-
-                else:
-                    print("\n[ERROR]: Unknown input.")
-
-            except KeyboardInterrupt:
-                print("\nQuitting by brute force! (^C detected)...")
+            except (EOFError, KeyboardInterrupt):
+                print("\nQuitting by brute force! (^C or ^D detected)...")
                 break
 
-    def __str__(self) -> str:
-        # This formats the list history, i`ll be adding a line break between links, you can remove it if you want
-        history_str = "".join(f"  - {url}" for url in self.history)
+    def handle_user_input(self, user_input: str) -> None:
+        if user_input == "#help":
+            self.status_message = self.get_commands_help_text()
 
-        # O f""" (f-string com aspas triplas) é o equivalente ao heredoc no Python
+        elif user_input == "#back":
+            self.go_back_to_last_visited_url()
+
+        elif user_input == "#showhist":
+            self.status_message = f"Navigation history: {self.history}"
+
+        elif user_input.startswith("#add "):
+            self.add_url(user_input.removeprefix("#add "))
+
+        elif user_input.startswith("#"):
+            self.status_message = f"[ERROR]: UnknownCommand: {user_input}"
+
+        elif user_input.startswith("/"):
+            self.visit_url(f"{self.current_url.path}{user_input}")
+
+        else:
+            self.visit_url(user_input)
+
+    def go_back_to_last_visited_url(self) -> None:
+        if not self.history:
+            self.status_message = "[ERROR]: EmptyNavigationHistory"
+
+            return
+
+        self.current_url = self.history.pop()
+        self.status_message = f"Returned to {self.current_url}"
+
+    def visit_url(self, url_path: str) -> None:
+        found_url = find_url_in_hierarchy(self.available_urls, url_path)
+
+        if found_url is None:
+            self.status_message = f"[ERROR]: PageNotFound (404): {url_path}"
+
+            return
+
+        if found_url is self.current_url:
+            return
+
+        if self.current_url.path:
+            self.history.append(self.current_url)
+
+        self.current_url = found_url
+        self.status_message = "Page found!"
+
+    def add_url(self, url: str) -> None:
+        if not url_can_be_added(url, self.available_urls):
+            self.status_message = f"[ERROR]: UrlCannotBeAdded: {url}"
+
+            return
+
+        try:
+            write_url_to_file(url)
+        except OSError as exception:
+            self.status_message = f"[ERROR]: {exception}"
+
+            return
+
+        add_url_to_hierarchy(self.available_urls, url)
+        self.status_message = f"Added {url}"
+
+    def get_commands_help_text(self) -> str:
+        return """Available commands:
+        <url>        visit an available url
+        /<page>      visit an internal page of the current url
+        #add <url>   add an url to the available ones
+        #back        return to the last visited url
+        #showhist    show the navigation history
+        #help        show this help
+        #quit        leave the browser"""
+
+    def __str__(self) -> str:
         browser_interface_content = f"""
         =========================================
         [ CLI BROWSER ]
         =========================================
-        Current URL : {self.current_url if self.current_url else "NONE (Index page)"}
+        Home    : {self.current_url}
+        History : {self.history}
         -----------------------------------------
-        History :
-        {history_str}
+        Links available: {self.current_url.child_urls or []}
+        -----------------------------------------
+        {self.status_message}
         =========================================
         """
-        return browser_interface_content
 
-    def add_url_to_history(self, url: str) -> bool:
-        if not url_is_valid(url):
-            raise ValueError("InvalidURLFormat")
-        self.history.append(url)
-        write_url_to_file("./browser_history.toml", url)
+        return browser_interface_content
