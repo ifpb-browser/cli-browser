@@ -11,7 +11,7 @@ Detalhes de implementação
         self.child_urls: list[Url] | None = child_urls
 ```
 
-[src/cli_browser/url.py#L2-L4](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/url.py#L2-L4)
+[src/cli_browser/url.py#L2-L4](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/url.py#L2-L4)
 
 -	**Modularização das funções**: cada arquivo expõe uma única função com o nome
 	do próprio arquivo, e as composições acontecem por delegação.
@@ -24,7 +24,7 @@ def compile_urls_hierarchy(urls: list[str]) -> list[Url]:
         add_url_to_hierarchy(url_hierarchy, url)
 ```
 
-[src/cli_browser/compile_urls_hierarchy.py#L5-L9](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/compile_urls_hierarchy.py#L5-L9)
+[src/cli_browser/compile_urls_hierarchy.py#L5-L9](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/compile_urls_hierarchy.py#L5-L11)
 
 -	**Validação do formato das urls com regex**: uma única expressão compilada
 	descreve o formato aceito e separa o domínio dos endpoints em grupos nomeados,
@@ -37,7 +37,7 @@ URL_PATTERN = re.compile(
 )
 ```
 
-[src/cli_browser/main.py#L6-L9](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/main.py#L6-L9)
+[src/cli_browser/main.py#L6-L9](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/main.py#L6-L9)
 
 -	**Armazenamento e parsing das urls**: as urls ficam em `browser_history.toml`,
 	lido com `tomli` na inicialização e escrito com `tomli_w` a cada `#add`.
@@ -47,7 +47,7 @@ URL_PATTERN = re.compile(
             data = tomli.load(browser_history_file)
 ```
 
-[src/cli_browser/read_browser_history_from_file.py#L8-L9](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/read_browser_history_from_file.py#L8-L9)
+[src/cli_browser/read_browser_history_from_file.py#L8-L9](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/read_browser_history_from_file.py#L8-L9)
 
 -	**Exceções do projeto**: toda exceção é tratada e virada mensagem na interface,
 	sendo `OSError` na escrita do arquivo, `EOFError` e `KeyboardInterrupt` no loop
@@ -60,7 +60,7 @@ URL_PATTERN = re.compile(
             self.status_message = f"[ERROR]: {exception}"
 ```
 
-[src/cli_browser/browser.py#L88-L91](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/browser.py#L88-L91)
+[src/cli_browser/browser.py#L88-L91](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/browser.py#L88-L91)
 
 -	**Interface**: a tela é redesenhada do zero a cada interação pelo
 	`clear_terminal()`, que envia o código ANSI `\033c` antes de cada print, e o
@@ -73,7 +73,7 @@ URL_PATTERN = re.compile(
         Links available: {self.current_url.child_urls or []}
 ```
 
-[src/cli_browser/browser.py#L113-L116](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/browser.py#L113-L116)
+[src/cli_browser/browser.py#L113-L116](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/browser.py#L113-L116)
 
 -	**Padrões mantidos**: formatação pelo `ruff format`, uma responsabilidade por
 	função, nenhum `if` aninhado, com decisões encadeadas e saídas antecipadas, e
@@ -95,4 +95,4 @@ def main() -> int:
     return 0
 ```
 
-[src/cli_browser/main.py#L12-L24](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/main.py#L12-L24)
+[src/cli_browser/main.py#L12-L24](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/main.py#L12-L24)
