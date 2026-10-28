@@ -31,8 +31,9 @@ recebem uma url exigem um espaço antes dela, portanto `#addwww.ifpb.edu.br` nã
 Banco de urls
 -------------
 
-As urls disponíveis são lidas de `browser_history.toml` na inicialização e
-persistidas nesse mesmo arquivo pelo `#add`:
+Cada url pai tem um arquivo toml em disco nomeado com a própria url, lido na
+inicialização e persistido ali pelo `#add`. O array começa pela url pai e segue
+com suas páginas internas, como no arquivo `www.ifpb.edu.br`:
 
 ```toml
 browser_history_urls = [
@@ -41,6 +42,8 @@ browser_history_urls = [
     "www.ifpb.edu.br/tsi/professores",
 ]
 ```
+
+O `make clean` remove todos os arquivos `www.*` da raiz do projeto.
 
 Implementação
 -------------

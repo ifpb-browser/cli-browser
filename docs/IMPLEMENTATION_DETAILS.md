@@ -37,17 +37,18 @@ URL_PATTERN = re.compile(
 )
 ```
 
-[src/cli_browser/main.py#L6-L9](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/main.py#L6-L9)
+[src/cli_browser/main.py#L5-L8](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/main.py#L5-L8)
 
--	**Armazenamento e parsing das urls**: as urls ficam em `browser_history.toml`,
-	lido com `tomli` na inicialização e escrito com `tomli_w` a cada `#add`.
+-	**Armazenamento e parsing das urls**: cada url pai tem um arquivo toml em disco
+	nomeado com a própria url, cujo array começa por ela e segue com suas páginas
+	internas, lido com `tomli` na inicialização e escrito com `tomli_w` pelo `#add`.
 
-```python
-        with open(BROWSER_HISTORY_FILE_PATH, "rb") as browser_history_file:
-            data = tomli.load(browser_history_file)
+```py
+    url_file_path = get_domain_from_url(url)
+    browser_history_urls = read_url_file(url_file_path) or [url_file_path]
 ```
 
-[src/cli_browser/read_browser_history_from_file.py#L8-L9](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/read_browser_history_from_file.py#L8-L9)
+[src/cli_browser/write_url_to_file.py#L9-L10](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/write_url_to_file.py#L9-L10)
 
 -	**Exceções do projeto**: toda exceção é tratada e virada mensagem na interface,
 	sendo `OSError` na escrita do arquivo, `EOFError` e `KeyboardInterrupt` no loop
@@ -95,4 +96,4 @@ def main() -> int:
     return 0
 ```
 
-[src/cli_browser/main.py#L12-L24](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/main.py#L12-L24)
+[src/cli_browser/main.py#L11-L23](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/main.py#L11-L23)
