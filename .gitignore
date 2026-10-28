@@ -4,4 +4,4 @@ __pycache__/
 dist/
 *.egg-info/
 .ruff_cache/
-browser_history.toml
+www.*

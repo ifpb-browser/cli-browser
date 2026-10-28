@@ -1,7 +1,6 @@
 import re
 import sys
 
-BROWSER_HISTORY_FILE_PATH = "./browser_history.toml"
 BROWSER_HISTORY_URLS_KEY = "browser_history_urls"
 URL_PATTERN = re.compile(
     r"^(?P<domain_name>www\.[a-zA-Z0-9-]+(?:\.[a-z]{2,})+)"
