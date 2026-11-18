@@ -11,6 +11,9 @@ requires-python = ">=3.12"
 license = { file = "LICENSE" }
 dependencies = []
 
+[project.optional-dependencies]
+dev = ["ruff"]
+
 [project.scripts]
 cli-browser = "cli_browser.main:main"
 

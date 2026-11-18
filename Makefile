@@ -3,16 +3,15 @@
 
 .venv:
 	python3 -m venv .venv
-	pip install -e .
+	./.venv/bin/pip install -e '.[dev]'
 
 .PHONY: fmt
 fmt: .venv
 	./.venv/bin/ruff format .
 
 .PHONY: run
-run: 
-	pip install -e .
-	python -m cli_browser
+run: .venv
+	./.venv/bin/python -m cli_browser
 
 .PHONY: clean
 clean:
