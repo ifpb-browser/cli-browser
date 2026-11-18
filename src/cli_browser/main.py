@@ -1,7 +1,7 @@
 import re
 import sys
 
-BROWSER_HISTORY_URLS_KEY = "browser_history_urls"
+PAGE_CONTENT_FILE_NAME = "url_page_content"
 URL_PATTERN = re.compile(
     r"^(?P<domain_name>www\.[a-zA-Z0-9-]+(?:\.[a-z]{2,})+)"
     r"(?P<page_endpoints>(?:/[a-zA-Z0-9._-]+)*)/?$"

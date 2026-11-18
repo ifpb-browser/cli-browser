@@ -4,12 +4,12 @@ from cli_browser.find_url_in_hierarchy import find_url_in_hierarchy
 from cli_browser.get_valid_history_list import get_valid_history_list
 from cli_browser.url import Url
 from cli_browser.url_can_be_added import url_can_be_added
-from cli_browser.write_url_to_file import write_url_to_file
+from cli_browser.write_url_page_content import write_url_page_content
 
 
 class Browser:
     def __init__(self) -> None:
-        self.current_url: Url = Url("", [])
+        self.current_url: Url = Url("", [], "")
         self.available_urls: list[Url] = get_valid_history_list()
         self.history: list[Url] = []
         self.status_message: str = "Type #help to see every available command."
@@ -32,26 +32,27 @@ class Browser:
                 break
 
     def handle_user_input(self, user_input: str) -> None:
-        if user_input == "#help":
-            self.status_message = self.get_commands_help_text()
+        match user_input:
+            case "#help":
+                self.status_message = self.get_commands_help_text()
 
-        elif user_input == "#back":
-            self.go_back_to_last_visited_url()
+            case "#back":
+                self.go_back_to_last_visited_url()
 
-        elif user_input == "#showhist":
-            self.status_message = f"Navigation history: {self.history}"
+            case "#showhist":
+                self.status_message = f"Navigation history: {self.history}"
 
-        elif user_input.startswith("#add "):
-            self.add_url(user_input.removeprefix("#add "))
+            case _ if user_input.startswith("#add "):
+                self.add_url(user_input.removeprefix("#add "))
 
-        elif user_input.startswith("#"):
-            self.status_message = f"[ERROR]: UnknownCommand: {user_input}"
+            case _ if user_input.startswith("#"):
+                self.status_message = f"[ERROR]: UnknownCommand: {user_input}"
 
-        elif user_input.startswith("/"):
-            self.visit_url(f"{self.current_url.path}{user_input}")
+            case _ if user_input.startswith("/"):
+                self.visit_url(f"{self.current_url.path}{user_input}")
 
-        else:
-            self.visit_url(user_input)
+            case _:
+                self.visit_url(user_input)
 
     def go_back_to_last_visited_url(self) -> None:
         if not self.history:
@@ -85,8 +86,10 @@ class Browser:
 
             return
 
+        page_content = input("content: ").strip()
+
         try:
-            write_url_to_file(url)
+            write_url_page_content(url, page_content)
         except OSError as exception:
             self.status_message = f"[ERROR]: {exception}"
 
@@ -112,6 +115,8 @@ class Browser:
         =========================================
         Home    : {self.current_url}
         History : {self.history}
+        -----------------------------------------
+        Content : {self.current_url.page_content}
         -----------------------------------------
         Links available: {self.current_url.child_urls or []}
         -----------------------------------------

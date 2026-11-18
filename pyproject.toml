@@ -9,17 +9,13 @@ description = "Command line web browser"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
-dependencies = ["tomli", "tomli-w"]
+dependencies = []
 
 [project.scripts]
 cli-browser = "cli_browser.main:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/cli_browser"]
-
-[tool.pyright]
-venvPath = "."
-venv = ".venv"
 
 [tool.ruff]
 line-length = 88
