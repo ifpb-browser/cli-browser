@@ -15,7 +15,7 @@ Limpar histŕico de URLs e dependências
 
 ```
 make clean
-`
+```
 
 Comandos
 --------
