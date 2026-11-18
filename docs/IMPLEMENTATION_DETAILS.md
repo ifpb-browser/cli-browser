@@ -2,16 +2,17 @@ Detalhes de implementação
 =========================
 
 -	**Classes Browser e Url como sistema de urls**: o `Browser` guarda o estado da
-	navegação e cada url é uma instância de `Url` que aninha suas páginas internas
-	em `child_urls`, em no máximo dois níveis, com os netos recebendo `None`.
+	navegação e cada url é uma instância de `Url` que guarda o conteúdo da página
+	em `page_content` e aninha suas páginas internas em `child_urls`, em no máximo
+	dois níveis, com os netos recebendo `None`.
 
 ```python
-    def __init__(self, path: str, child_urls: "list[Url] | None") -> None:
         self.path: str = path
         self.child_urls: list[Url] | None = child_urls
+        self.page_content: str = page_content
 ```
 
-[src/cli_browser/url.py#L2-L4](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/url.py#L2-L4)
+[src/cli_browser/url.py#L5-L7](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/url.py#L5-L7)
 
 -	**Modularização das funções**: cada arquivo expõe uma única função com o nome
 	do próprio arquivo, e as composições acontecem por delegação.
@@ -39,16 +40,20 @@ URL_PATTERN = re.compile(
 
 [src/cli_browser/main.py#L5-L8](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/main.py#L5-L8)
 
--	**Armazenamento e parsing das urls**: cada url pai tem um arquivo toml em disco
-	nomeado com a própria url, cujo array começa por ela e segue com suas páginas
-	internas, lido com `tomli` na inicialização e escrito com `tomli_w` pelo `#add`.
+-	**Armazenamento das urls em pastas**: cada url é uma pasta nomeada com a
+	própria url, então o caminho em disco é a própria url e o `makedirs` do `#add`
+	cria a hierarquia inteira, com o conteúdo da página no arquivo sem extensão
+	`url_page_content` e as páginas internas indexadas pelas pastas de dentro.
 
-```py
-    url_file_path = get_domain_from_url(url)
-    browser_history_urls = read_url_file(url_file_path) or [url_file_path]
+```python
+def write_url_page_content(url: str, page_content: str) -> None:
+    makedirs(url, exist_ok=True)
+
+    with open(f"{url}/{PAGE_CONTENT_FILE_NAME}", "w") as page_content_file:
+        page_content_file.write(page_content)
 ```
 
-[src/cli_browser/write_url_to_file.py#L9-L10](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/write_url_to_file.py#L9-L10)
+[src/cli_browser/write_url_page_content.py#L6-L10](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/write_url_page_content.py#L6-L10)
 
 -	**Exceções do projeto**: toda exceção é tratada e virada mensagem na interface,
 	sendo `OSError` na escrita do arquivo, `EOFError` e `KeyboardInterrupt` no loop
@@ -56,12 +61,12 @@ URL_PATTERN = re.compile(
 
 ```python
         try:
-            write_url_to_file(url)
+            write_url_page_content(url, page_content)
         except OSError as exception:
             self.status_message = f"[ERROR]: {exception}"
 ```
 
-[src/cli_browser/browser.py#L88-L91](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/browser.py#L88-L91)
+[src/cli_browser/browser.py#L91-L94](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/browser.py#L91-L94)
 
 -	**Interface**: a tela é redesenhada do zero a cada interação pelo
 	`clear_terminal()`, que envia o código ANSI `\033c` antes de cada print, e o
@@ -71,14 +76,15 @@ URL_PATTERN = re.compile(
         Home    : {self.current_url}
         History : {self.history}
         -----------------------------------------
-        Links available: {self.current_url.child_urls or []}
+        Content : {self.current_url.page_content}
 ```
 
-[src/cli_browser/browser.py#L113-L116](https://github.com/ifpb-browser/cli-browser/blob/d48a00a0caaec535d11fb9f57b0ff7f90b6df0a2/src/cli_browser/browser.py#L113-L116)
+[src/cli_browser/browser.py#L116-L119](https://github.com/ifpb-browser/cli-browser/blob/main/src/cli_browser/browser.py#L116-L119)
 
 -	**Padrões mantidos**: formatação pelo `ruff format`, uma responsabilidade por
-	função, nenhum `if` aninhado, com decisões encadeadas e saídas antecipadas, e
-	`main.py` reduzido às constantes compartilhadas e à chamada do `Browser`.
+	função, saídas antecipadas em vez de `if` aninhado, despacho de comandos com
+	`match`, e `main.py` reduzido às constantes compartilhadas e à chamada do
+	`Browser`.
 
 ```python
 def main() -> int:

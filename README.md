@@ -7,14 +7,14 @@ Execução
 --------
 
 ```
-pip install -e .
-python -m cli_browser
+make run
 ```
 
 Comandos
 --------
 
-Toda entrada é digitada no prompt `url:`. Comandos começam com `#`, e os que
+Toda entrada é digitada no prompt `url:`, com exceção do conteúdo da página, que
+o `#add` pede em seguida no prompt `content:`. Comandos começam com `#`, e os que
 recebem uma url exigem um espaço antes dela, portanto `#addwww.ifpb.edu.br` não
 é um comando.
 
@@ -22,7 +22,7 @@ recebem uma url exigem um espaço antes dela, portanto `#addwww.ifpb.edu.br` nã
 |----------------|-----------------------------------------------------------------------|
 | `<url>`        | Visita uma url disponível. Erro: `PageNotFound (404)`.                |
 | `/<página>`    | Visita uma página interna da url atual. Erro: `PageNotFound (404)`.   |
-| `#add <url>`   | Adiciona uma url às disponíveis. Erro: `UrlCannotBeAdded`.            |
+| `#add <url>`   | Adiciona uma url e pede seu conteúdo. Erro: `UrlCannotBeAdded`.       |
 | `#back`        | Volta à última url visitada. Erro: `EmptyNavigationHistory`.          |
 | `#showhist`    | Exibe o histórico de navegação.                                       |
 | `#help`        | Lista todos os comandos.                                              |
@@ -31,19 +31,24 @@ recebem uma url exigem um espaço antes dela, portanto `#addwww.ifpb.edu.br` nã
 Banco de urls
 -------------
 
-Cada url pai tem um arquivo toml em disco nomeado com a própria url, lido na
-inicialização e persistido ali pelo `#add`. O array começa pela url pai e segue
-com suas páginas internas, como no arquivo `www.ifpb.edu.br`:
+Cada url pai é uma pasta em disco nomeada com a própria url, lida na
+inicialização e persistida ali pelo `#add`. Dentro dela fica o arquivo sem
+extensão `url_page_content`, com o texto puro digitado no prompt `content:`, e
+cada página interna é uma pasta que segue a mesma regra, como na pasta
+`www.ifpb.edu.br`:
 
-```toml
-browser_history_urls = [
-    "www.ifpb.edu.br",
-    "www.ifpb.edu.br/tsi",
-    "www.ifpb.edu.br/tsi/professores",
-]
+```
+www.ifpb.edu.br/
+├── url_page_content
+└── tsi/
+    ├── url_page_content
+    └── professores/
+        └── url_page_content
 ```
 
-O `make clean` remove todos os arquivos `www.*` da raiz do projeto.
+As páginas internas de uma url são indexadas pelos nomes das pastas dentro dela.
+
+O `make clean` remove todas as pastas `www.*` da raiz do projeto.
 
 Implementação
 -------------

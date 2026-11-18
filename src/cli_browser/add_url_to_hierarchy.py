@@ -1,6 +1,7 @@
 from cli_browser.find_url_in_hierarchy import find_url_in_hierarchy
 from cli_browser.get_domain_from_url import get_domain_from_url
 from cli_browser.get_page_endpoints_from_url import get_page_endpoints_from_url
+from cli_browser.read_url_page_content import read_url_page_content
 from cli_browser.url import Url
 
 MAXIMUM_INTERNAL_PAGE_DEPTH = 2
@@ -12,7 +13,7 @@ def add_url_to_hierarchy(url_hierarchy: list[Url], url: str) -> None:
     parent_url = find_url_in_hierarchy(url_hierarchy, domain_name)
 
     if parent_url is None:
-        parent_url = Url(domain_name, [])
+        parent_url = Url(domain_name, [], read_url_page_content(domain_name))
         url_hierarchy.append(parent_url)
 
     page_endpoints = get_page_endpoints_from_url(url)[:MAXIMUM_INTERNAL_PAGE_DEPTH]
@@ -31,7 +32,9 @@ def add_url_to_hierarchy(url_hierarchy: list[Url], url: str) -> None:
                 break
 
             child_url = Url(
-                page_path, [] if page_depth < MAXIMUM_INTERNAL_PAGE_DEPTH else None
+                page_path,
+                [] if page_depth < MAXIMUM_INTERNAL_PAGE_DEPTH else None,
+                read_url_page_content(page_path),
             )
             child_urls.append(child_url)
 
