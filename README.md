@@ -10,6 +10,13 @@ Execução
 make run
 ```
 
+Limpar histŕico de URLs e dependências
+--------
+
+```
+make clean
+`
+
 Comandos
 --------
 
@@ -65,3 +72,7 @@ Dependências:
 ```
 make fmt
 ```
+
+## Video de demonstração
+
+https://github.com/user-attachments/assets/5bc8711a-5ee1-4a48-be00-8a60ef636098
